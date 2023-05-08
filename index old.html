@@ -12,7 +12,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r118/three.min.js"></script>
         <script src="js/OrbitControls2.js"></script>
         <script src="js/components.js"></script>
-        <script src="js/ThreeCSG.js"></script>
+        <!-- <script src="js/ThreeCSG.js"></script> -->
 
 
 <script>
@@ -40,7 +40,6 @@
 
             scene.add(lighting());
 
-
             // const axesHelper = new THREE.AxesHelper( 2 );
             // scene.add( axesHelper );
             // console.log(axesHelper);
@@ -49,9 +48,6 @@
             scene.add( new THREE.ArrowHelper( new THREE.Vector3( 1,0,0 ), arrowPos, 2, 0x7F2020, 0.1, 0.1 ) ); // dir, origin, length, hex
             scene.add( new THREE.ArrowHelper( new THREE.Vector3( 0,1,0 ), arrowPos, 2, 0x7F2020, 0.1, 0.1 ) );
             scene.add( new THREE.ArrowHelper( new THREE.Vector3( 0,0,1 ), arrowPos, 2, 0x7F2020, 0.1, 0.1 ) );
-
-
-
 
 
             // var material = new THREE.MeshStandardMaterial( { color: 0xeeeeee, roughness:0 } );
@@ -75,9 +71,6 @@
 
             var beamSizeAtSample = 0.020; // in mm
 
-
-
-
             var settings = new function() { 
                 this.scanEnabled = true;
                 this.scanSpeed = 10;
@@ -88,11 +81,11 @@
                 this.courseY = 0.3;
             } 
 
+            var parameters;
 
 
 
             const sample = SiN_membrane();
-            
             const sampleRotation = new THREE.Group();
             const sampleCoursePositioning = new THREE.Group();
             const sampleScanner = new THREE.Group();
@@ -110,12 +103,6 @@
             table.add( sampleScanner );
 
 
-            
-
-
-
-
-
             var rasterPositions = [];
             var scanSize = 0.1
             var scanStep = 0.03
@@ -126,18 +113,9 @@
             }
 
 
-
-
-
-
-
-            // sample mount
-            
-
             // arrow helpers
             table.add( new THREE.ArrowHelper( new THREE.Vector3( 1,0,0 ), new THREE.Vector3( 0,0,0.01 ), 1, 0x00ffff, 0.1, 0.1 ) ); // dir, origin, length, hex
             table.add( new THREE.ArrowHelper( new THREE.Vector3( 0,1,0 ), new THREE.Vector3( 0,0,0.01 ), 1, 0x00ffff, 0.1, 0.1 ) );
-
 
             
             var laminographyTilt = 60;
@@ -186,6 +164,9 @@
             scene.add( OSA().translateZ(-1.5) );
             scene.add(beam(beamSizeAtSample));
 
+
+            // sampleRotation.add(hallbachMagnets());
+
             
 
 
@@ -218,6 +199,46 @@
 
 
 
+    <script type="module">
+        import { GUI } from 'https://threejs.org/examples/jsm/libs/lil-gui.module.min.js';
+
+        const gui2 = new GUI()
+
+        parameters = 
+        {
+            tilt: 40,
+            rotation: 0,
+            x: 0, y: 30, z: 0,
+            color: "#ff0000", // color (change "#" to "0x")
+            opacity: 1, 
+            visible: true,
+            material: "Phong",
+            reset: function() { resetCube() }
+        };
+
+        var folder1 = gui2.addFolder('Position');
+        var tilt = folder1.add( parameters, 'tilt' ).min(0).max(60).step(1).listen(console.log("tilt listen"));
+
+        var rotation = folder1.add( parameters, 'rotation' ).min(0).max(100).step(1).listen();
+        var cubeZ = folder1.add( parameters, 'z' ).min(-200).max(200).step(1).listen();
+        folder1.open();
+
+
+        tilt.onChange(function(value) {   
+            table.rotation.x = -value*Math.PI/180;
+        });
+
+        rotation.onChange(function(value) {   
+            sampleRotation.rotation.z = value*Math.PI/180;
+            console.log(tilt);
+            // tilt.set(0);
+            parameters.tilt = 0;
+        });
+
+
+
+    </script>
+
 
 
         <script type="module">
@@ -226,7 +247,6 @@
             const gui = new GUI(),
             folderLocal = gui.addFolder( 'Scanning' ),
             propsLocal = {
-
                 get 'Tilt'() {return -table.rotation.x*180/Math.PI;},
                 set 'Tilt'( v ) {table.rotation.x = -v*Math.PI/180;},
 
@@ -255,7 +275,6 @@
                     settings.courseX = v;
                     sampleCoursePositioning.position.x = settings.courseX * Math.cos(sampleRotation.rotation.z) - settings.courseY * Math.sin(sampleRotation.rotation.z);
                     sampleCoursePositioning.position.y = settings.courseY * Math.cos(sampleRotation.rotation.z) + settings.courseX * Math.sin(sampleRotation.rotation.z);;
-
                 },
 
                 get 'courseY'() {return settings.courseY;},
@@ -263,7 +282,6 @@
                     settings.courseY = v;
                     sampleCoursePositioning.position.x = settings.courseX * Math.cos(sampleRotation.rotation.z) - settings.courseY * Math.sin(sampleRotation.rotation.z);
                     sampleCoursePositioning.position.y = settings.courseY * Math.cos(sampleRotation.rotation.z) + settings.courseX * Math.sin(sampleRotation.rotation.z);;
-
                 }
 
             },
@@ -276,6 +294,9 @@
                 set 'Scan Speed'( v ) {settings.scanSpeed = v;},
 
             };
+
+
+            
 
             folderLocal.add( propsLocal, 'Tilt',   0.0, 60);
             folderLocal.add( propsLocal, 'Rotation',  0.0, 360);

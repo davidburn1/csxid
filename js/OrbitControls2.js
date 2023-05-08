@@ -1060,3 +1060,6 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 	}
 
 } );
+
+
+export { OrbitControls};
