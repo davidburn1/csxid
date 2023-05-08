@@ -7,7 +7,7 @@ import React, { useRef, useState } from "react";
 
 
 
-import { Canvas, useFrame, useLoader, useThree,  } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 
 
@@ -37,15 +37,15 @@ function QMI(props) {
   const laminographyRotation = useRef();
 
 
-  useFrame(({ clock }) => {
-    const a = clock.getElapsedTime()
+  // useFrame(({ clock }) => {
+    // const a = clock.getElapsedTime()
     // console.log(a) // the value will be 0 at scene initialization and grow each frame
     // props.setData('clock',a);
     // laminographyRotation = a*10;
     // laminographyRotation.current.rotation.z = a*2;
     // laminographyTilt.current.rotation.x = tiltobj.rotation;
     // console.log(tiltobj.rotation);
-  })
+  // })
 
   // console.log(laminographyRotation);
 
@@ -149,24 +149,24 @@ function App() {
     var updates = {...data};
 
 
-    if (key == "sampleX"){  
+    if (key === "sampleX"){  
       [updates['scanX'], updates['scanY']] = rotate(data.sampleRotation, value, data.sampleY);
     } 
-    if (key == "sampleY"){  
+    if (key === "sampleY"){  
       [updates['scanX'], updates['scanY']] = rotate(data.sampleRotation, data.sampleX, value);
     } 
-    if (key == "sampleRotation"){  
+    if (key === "sampleRotation"){  
       [updates['scanX'], updates['scanY']] = rotate(value, data.sampleX, data.sampleY);
       updates['rotation'] = value;
     } 
 
-    if (key == "scanX"){  
+    if (key === "scanX"){  
       [updates['sampleX'], updates['sampleY']] = rotate(-data.rotation, value, data.scanY);
     } 
-    if (key == "scanY"){  
+    if (key === "scanY"){  
       [updates['sampleX'], updates['sampleY']] = rotate(-data.rotation, data.scanX, value);
     } 
-    if (key == "rotation"){  
+    if (key === "rotation"){  
       [updates['sampleX'], updates['sampleY']] = rotate(-value, data.scanX, data.scanY);
       updates['sampleRotation'] = value;
     } 

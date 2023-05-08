@@ -26,7 +26,7 @@ export function ScanPositionMarkers(props) {
     const geometry = new THREE.BufferGeometry().setFromPoints( points );
     const material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
 
-    for (var i=0; i<scanPositions.length; i++) {
+    for (i=0; i<scanPositions.length; i++) {
         const ellipse = new THREE.Line( geometry, material );
         ellipse.position.x = scanPositions[i][0] ;
         ellipse.position.y = scanPositions[i][1] ;
